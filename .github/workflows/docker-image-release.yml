@@ -16,12 +16,15 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v2
+      - name: Get tag name
+        id: get_tag_name
+        run: echo ::set-output name=RELEASE_VERSION::${GITHUB_REF/refs\/tags\//}
       - name: Push to Docker hub
         uses: docker/build-push-action@v1
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
           add_git_labels: true
-          repository: ${{ secrets.DOCKER_USER }}/kubectl
-          tags: ${{ github.ref }}-${{ matrix.image_name }}-${{ matrix.image_version }}
-          build_args: KUBECTL_VERSION=${{ github.ref }}, IMAGE=${{ matrix.image_name }}:${{ matrix.image_version }}
+          repository: ${{ secrets.DOCKER_USERNAME }}/kubectl
+          tags: ${{ steps.get_tag_name.outputs.RELEASE_VERSION }}-${{ matrix.image_name }}-${{ matrix.image_version }}
+          build_args: KUBECTL_VERSION=${{ steps.get_tag_name.outputs.RELEASE_VERSION }},IMAGE=${{ matrix.image_name }}:${{ matrix.image_version }}
