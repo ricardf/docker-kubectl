@@ -24,4 +24,4 @@ jobs:
           add_git_labels: true
           registry: docker.pkg.github.com
           repository: ricardf/docker-kubectl/kubectl
-          tags: stable
+          tag_with_sha: true
