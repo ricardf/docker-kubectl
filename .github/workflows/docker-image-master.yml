@@ -1,4 +1,4 @@
-name: Docker Image CI
+name: Docker Image stable
 
 on:
   # Trigger the workflow on push or pull request,
@@ -17,6 +17,9 @@ jobs:
     runs-on: ubuntu-latest
     strategy:    
       fail-fast: false
+      matrix:
+        image_name: [ubuntu]
+        image_version: [18.04, 20.04]
     steps:
       - name: Check out the repo
         uses: actions/checkout@v2
@@ -27,4 +30,5 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           add_git_labels: true
           repository: ${{ secrets.DOCKER_USERNAME }}/kubectl
-          tags: stable
+          tags: stable-${{ matrix.image_name }}:${{ matrix.image_version }}
+          build_args: IMAGE=${{ matrix.image_name }}:${{ matrix.image_version }}

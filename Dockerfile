@@ -1,6 +1,7 @@
 ARG KUBECTL_VERSION=
+ARG IMAGE=
 
-FROM ubuntu:20.04
+FROM ${IMAGE} as parent
 RUN apt-get -y update
 RUN apt-get -y upgrade
 RUN apt-get -y install sudo && rm -rf /var/lib/apt/lists/*

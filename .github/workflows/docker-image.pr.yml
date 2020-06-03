@@ -1,4 +1,4 @@
-name: Docker Image CI
+name: Docker Image CI on Pull Request
 
 on:
   # Trigger the workflow on push or pull request,
@@ -13,6 +13,9 @@ jobs:
     runs-on: ubuntu-latest
     strategy:    
       fail-fast: false
+      matrix:
+        image_name: [ubuntu]
+        image_version: [18.04, 20.04]
     steps:
       - name: Check out the repo
         uses: actions/checkout@v2
@@ -24,4 +27,5 @@ jobs:
           add_git_labels: true
           registry: docker.pkg.github.com
           repository: ricardf/docker-kubectl/kubectl
-          tag_with_sha: true
+          tags: ${{ github.sha }}-${{ matrix.image_name }}-${{ matrix.image_version }}
+          build_args: IMAGE=${{ matrix.image_name }}:${{ matrix.image_version }}
