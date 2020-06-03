@@ -1,0 +1,34 @@
+name: Docker Image stable
+
+on:
+  # Trigger the workflow on push or pull request,
+  # but only for the master branch
+  push:
+    branches:
+      - master
+  schedule:
+    # As well as running when we make changes we should run at least
+    # every week in order to pick up new parent images
+    - cron:  "0 0 * * 0"
+
+jobs:
+  push_to_registry:
+    name: Push Docker image to GitHub Packages
+    runs-on: ubuntu-latest
+    strategy:    
+      fail-fast: false
+      matrix:
+        image_name: [ubuntu]
+        image_version: [18.04, 20.04]
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+      - name: Push to Docker hub
+        uses: docker/build-push-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          add_git_labels: true
+          repository: ${{ secrets.DOCKER_USERNAME }}/kubectl
+          tags: stable-${{ matrix.image_name }}-${{ matrix.image_version }}
+          build_args: IMAGE=${{ matrix.image_name }}:${{ matrix.image_version }}
